@@ -38,6 +38,15 @@ except ImportError:
 _LOGGER = logging.getLogger(__name__)
 
 
+class Fido2Error(ValueError):
+    """FIDO 2 error."""
+
+    def __init__(self, *args, error_code: str = None):
+        """Set error code."""
+        super().__init__(*args)
+        self.error_code = error_code
+
+
 class Fido2ViewMixin(object):
     """
     Mixin with common methods for all FIDO 2 views.
@@ -99,7 +108,11 @@ class BaseFido2RequestView(Fido2ViewMixin, View, metaclass=ABCMeta):
         try:
             request_data, state = self.create_fido2_request()
         except ValueError as error:
-            return JsonResponse({'error': force_text(error)}, status=BAD_REQUEST)
+            return JsonResponse({
+                'error_code': getattr(error, 'error_code', None),
+                'message': force_text(error),
+                'error': force_text(error),
+            }, status=BAD_REQUEST)
 
         # Encode challenge into base64 encoding
         challenge = request_data['publicKey']['challenge']
@@ -263,7 +276,8 @@ class Fido2AuthenticationRequestView(Fido2AuthenticationViewMixin, BaseFido2Requ
         assert user and user.is_authenticated, "User must not be anonymous for FIDO 2 requests."
         credentials = self.get_credentials(user)
         if not credentials:
-            raise ValueError("Can't create FIDO 2 authentication request, no authenticators.")
+            raise Fido2Error("Can't create FIDO 2 authentication request, no authenticators.",
+                             error_code='NoAuthenticatorsError')
 
         return self.server.authenticate_begin(credentials)
 
