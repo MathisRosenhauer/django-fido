@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import base64
 import logging
 from abc import ABCMeta, abstractmethod
+from enum import Enum, unique
 from http.client import BAD_REQUEST
 from typing import Dict, List, Optional, Tuple
 
@@ -38,10 +39,16 @@ except ImportError:
 _LOGGER = logging.getLogger(__name__)
 
 
+@unique
+class Fido2ServerError(str, Enum):
+    DEFAULT = 'Fido2ServerError'
+    NO_AUTHENTICATORS = 'NoAuthenticatorsError'
+
+
 class Fido2Error(ValueError):
     """FIDO 2 error."""
 
-    def __init__(self, *args, error_code: str = None):
+    def __init__(self, *args, error_code: Fido2ServerError):
         """Set error code."""
         super().__init__(*args)
         self.error_code = error_code
@@ -109,7 +116,7 @@ class BaseFido2RequestView(Fido2ViewMixin, View, metaclass=ABCMeta):
             request_data, state = self.create_fido2_request()
         except ValueError as error:
             return JsonResponse({
-                'error_code': getattr(error, 'error_code', None),
+                'error_code': getattr(error, 'error_code', Fido2ServerError.DEFAULT),
                 'message': force_text(error),
                 'error': force_text(error),  # error key is deprecated and will be removed in the future
             }, status=BAD_REQUEST)
@@ -277,7 +284,7 @@ class Fido2AuthenticationRequestView(Fido2AuthenticationViewMixin, BaseFido2Requ
         credentials = self.get_credentials(user)
         if not credentials:
             raise Fido2Error("Can't create FIDO 2 authentication request, no authenticators.",
-                             error_code='NoAuthenticatorsError')
+                             error_code=Fido2ServerError.NO_AUTHENTICATORS)
 
         return self.server.authenticate_begin(credentials)
 
