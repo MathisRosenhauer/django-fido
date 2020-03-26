@@ -41,6 +41,8 @@ _LOGGER = logging.getLogger(__name__)
 
 @unique
 class Fido2ServerError(str, Enum):
+    """FIDO 2 server error types."""
+
     DEFAULT = 'Fido2ServerError'
     NO_AUTHENTICATORS = 'NoAuthenticatorsError'
 
