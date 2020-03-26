@@ -111,7 +111,7 @@ class BaseFido2RequestView(Fido2ViewMixin, View, metaclass=ABCMeta):
             return JsonResponse({
                 'error_code': getattr(error, 'error_code', None),
                 'message': force_text(error),
-                'error': force_text(error),
+                'error': force_text(error),  # error key is deprecated and will be removed in the future
             }, status=BAD_REQUEST)
 
         # Encode challenge into base64 encoding

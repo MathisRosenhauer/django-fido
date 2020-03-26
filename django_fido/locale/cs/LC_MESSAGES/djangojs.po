@@ -14,7 +14,7 @@ msgstr ""
 msgid "An unknown error has occurred."
 msgstr "Nastala neznámá chyba."
 
-msgid "Can't create FIDO 2 authentication request, no authenticators."
+msgid "Can't create FIDO 2 authentication request, no authenticators found."
 msgstr "Není možné zahájit FIDO 2 autentizaci, uživatel nemá žádné autentikátory."
 
 msgid ""
