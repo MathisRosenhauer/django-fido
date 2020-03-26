@@ -285,7 +285,7 @@ class Fido2AuthenticationRequestView(Fido2AuthenticationViewMixin, BaseFido2Requ
         assert user and user.is_authenticated, "User must not be anonymous for FIDO 2 requests."
         credentials = self.get_credentials(user)
         if not credentials:
-            raise Fido2Error("Can't create FIDO 2 authentication request, no authenticators.",
+            raise Fido2Error("Can't create FIDO 2 authentication request, no authenticators found.",
                              error_code=Fido2ServerError.NO_AUTHENTICATORS)
 
         return self.server.authenticate_begin(credentials)

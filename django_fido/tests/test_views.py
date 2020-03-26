@@ -198,8 +198,8 @@ class TestFido2AuthenticationRequestView(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {
             'error_code': 'NoAuthenticatorsError',
-            'message': "Can't create FIDO 2 authentication request, no authenticators.",
-            'error': "Can't create FIDO 2 authentication request, no authenticators.",
+            'message': "Can't create FIDO 2 authentication request, no authenticators found.",
+            'error': "Can't create FIDO 2 authentication request, no authenticators found.",
         })
         self.assertNotIn(FIDO2_REQUEST_SESSION_KEY, self.client.session)
 
